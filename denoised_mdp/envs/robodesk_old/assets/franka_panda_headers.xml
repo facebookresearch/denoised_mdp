@@ -1,0 +1,66 @@
+<?xml version="1.0"?>
+<mujocoinclude>
+  <size nuser_actuator="5"/>
+  <actuator>
+    <position name="panda0_joint1" joint="panda0_joint1" class="panda" kp="870" forcerange="-87 87" ctrlrange="-2.9671 2.9671"/> <!-- velocity="2.1750" -->
+    <position name="panda0_joint2" joint="panda0_joint2" class="panda" kp="870" forcerange="-87 87" ctrlrange="-1.8326 1.8326"/> <!-- velocity="2.1750" -->
+    <position name="panda0_joint3" joint="panda0_joint3" class="panda" kp="870" forcerange="-87 87" ctrlrange="-2.9671 2.9671"/> <!-- velocity="2.1750" -->
+    <position name="panda0_joint4" joint="panda0_joint4" class="panda" kp="870" forcerange="-87 87" ctrlrange="-3.1416 0.0"/> <!-- velocity="2.1750" -->
+    <position name="panda0_joint5" joint="panda0_joint5" class="panda" kp="120" forcerange="-12 12" ctrlrange="-2.9671 2.9671"/> <!-- velocity="2.6100" -->
+    <position name="panda0_joint6" joint="panda0_joint6" class="panda" kp="120" forcerange="-12 12" ctrlrange="-3.7525 2.1817"/> <!-- velocity="2.6100" -->
+    <position name="panda0_joint7" joint="panda0_joint7" class="panda" kp="120" forcerange="-12 12" ctrlrange="-2.9671 2.9671"/> <!-- velocity="2.9671" -->
+    <position name="r_gripper_finger_joint" joint="panda0_finger_joint1" class="panda_finger" kp="500" forcerange="-70 70" ctrlrange="0 0.04"/> <!-- velocity=".2" -->
+    <position name="l_gripper_finger_joint" joint="panda0_finger_joint2" class="panda_finger" kp="500" forcerange="-70 70" ctrlrange="0 0.04"/> <!-- velocity=".2" -->
+  </actuator>
+  <asset>
+    <!-- Franka meshes -->
+    <mesh name="link0_col" file="meshes/franka/collision_link0.stl"/>
+    <mesh name="link1_col" file="meshes/franka/collision_link1.stl"/>
+    <mesh name="link2_col" file="meshes/franka/collision_link2.stl"/>
+    <mesh name="link3_col" file="meshes/franka/collision_link3.stl"/>
+    <mesh name="link4_col" file="meshes/franka/collision_link4.stl"/>
+    <mesh name="link5_col" file="meshes/franka/collision_link5.stl"/>
+    <mesh name="link6_col" file="meshes/franka/collision_link6.stl"/>
+    <mesh name="link7_col" file="meshes/franka/collision_link7.stl"/>
+    <mesh name="hand_col" file="meshes/franka/collision_hand.stl"/>
+    <mesh name="finger_col" file="meshes/franka/collision_finger.stl" scale="1.75 1.0 1.75"/>
+    <mesh name="link0_viz" file="meshes/franka/visual_link0.stl"/>
+    <mesh name="link1_viz" file="meshes/franka/visual_link1.stl"/>
+    <mesh name="link2_viz" file="meshes/franka/visual_link2.stl"/>
+    <mesh name="link3_viz" file="meshes/franka/visual_link3.stl"/>
+    <mesh name="link4_viz" file="meshes/franka/visual_link4.stl"/>
+    <mesh name="link5_viz" file="meshes/franka/visual_link5.stl"/>
+    <mesh name="link6_viz" file="meshes/franka/visual_link6.stl"/>
+    <mesh name="link7_viz" file="meshes/franka/visual_link7.stl"/>
+    <mesh name="hand_viz" file="meshes/franka/visual_hand.stl"/>
+    <mesh name="finger_viz" file="meshes/franka/visual_finger.stl" scale="1.75 1.0 1.75"/>
+  </asset>
+  <default>
+    <!-- Franka default classes -->
+    <default class="panda">
+      <joint pos="0 0 0" axis="0 0 1" limited="true"/>
+      <position forcelimited="true" ctrllimited="true" user="1002 40 2001 -0.005 0.005"/>
+      <default class="panda_viz">
+        <geom contype="0" conaffinity="0" group="0" type="mesh" rgba=".95 .99 .92 1" mass="0"/>
+      </default>
+      <default class="panda_col">
+        <geom contype="1" conaffinity="1" group="3" type="mesh" rgba=".5 .6 .7 1"/>
+      </default>
+      <default class="panda_arm">
+        <joint damping="100"/>
+      </default>
+      <default class="panda_forearm">
+        <joint damping="10"/>
+      </default>
+      <default class="panda_finger">
+        <joint damping="100" armature="5"/>
+        <geom friction="1 0.5 0.0001" solref="0.01 1" solimp="0.8 0.9 0.001" margin="0.001" user="0" rgba="0.5 0.6 0.7 .4" contype="1" conaffinity="0" condim="6" group="3"/>
+        <position user="1002 40 2001 -0.0001 0.0001"/>
+      </default>
+    </default>
+    <default class="panda_overlay">
+      <joint limited="false" damping="1000" armature="1" frictionloss="10"/>
+      <geom contype="0" conaffinity="0" group="2" type="mesh" rgba=".42 0.42 0.42 .5"/>
+    </default>
+  </default>
+</mujocoinclude>

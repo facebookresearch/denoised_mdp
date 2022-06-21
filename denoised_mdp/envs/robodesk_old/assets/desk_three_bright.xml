@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<mujoco model="franka_desk">
+  <include file="three_desks_base_model.xml"/>
+
+  <visual>
+    <headlight ambient="0.225 0.225 0.225" diffuse="0.9 0.9 0.9" specular="0.9 0.9 0.9"/>
+  </visual>
+</mujoco>

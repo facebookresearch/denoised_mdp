@@ -1,0 +1,4 @@
+<?xml version="1.0"?>
+<mujoco model="franka_desk">
+  <include file="three_desks_base_model.xml"/>
+</mujoco>

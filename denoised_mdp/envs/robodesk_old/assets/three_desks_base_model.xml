@@ -1,0 +1,488 @@
+<?xml version="1.0"?>
+<mujocoinclude>
+  <compiler angle="radian"/>
+  <size njmax="2000" nconmax="2000"/>
+  <option timestep="0.002"/>
+  <compiler angle="radian"/>
+  <asset>
+    <texture name="plane_texture" type="2d" height="1" width="1" file="textures/white_marble_tile.png"/>
+    <material name="plane_material" reflectance="0.01" texture="plane_texture" texrepeat="4 4" texuniform="true"/>
+
+    <texture name="tv_texture" type="cube" height="120" width="120" builtin="checker"/>
+    <material name="tv_material" reflectance="0.7" texture="tv_texture" texuniform="false" shininess="1" specular="1"/>
+
+    <!-- Bin meshes -->
+    <mesh name="bin" file="meshes/bin.stl" scale="0.01 0.01 0.01"/>
+    <texture name="bin_metal_texture" type="cube" height="1" width="1" file="textures/metal.png"/>
+    <material name="bin_metal_material" texture="bin_metal_texture" texrepeat="3 3" reflectance="0.7" texuniform="false"/>
+
+    <!-- Button meshes -->
+    <mesh name="button_holder" file="meshes/button_holder.stl" scale="0.01 0.01 0.01"/>
+    <mesh name="lights_holder" file="meshes/button_holder.stl" scale="0.02 0.01 0.02"/>
+    <texture name="button_metal_texture" type="cube" height="1" width="1" file="textures/metal.png"/>
+    <material name="button_metal_material" texture="button_metal_texture" texrepeat="3 3" reflectance="0.7" texuniform="false"/>
+
+    <!-- Desk meshes -->
+    <mesh name="desk_main" file="meshes/desk_main.stl" scale="0.01 0.01 0.01"/>
+    <mesh name="desk_slide_wood" file="meshes/desk_slide_wood.stl" scale="0.01 0.01 0.01"/>
+    <mesh name="desk_slide_handle" file="meshes/desk_slide_handle.stl" scale="0.01 0.01 0.01"/>
+    <mesh name="desk_drawer_wood" file="meshes/desk_drawer_wood.stl" scale="0.01 0.01 0.01"/>
+    <mesh name="desk_drawer_handle" file="meshes/desk_drawer_handle.stl" scale="0.01 0.01 0.01"/>
+    <texture name="desk_wood_texture" type="cube" height="1" width="1" file="textures/wood.png"/>
+    <texture name="desk_metal_texture" type="cube" height="1" width="1" file="textures/metal.png"/>
+    <material name="desk_wood_material" texture="desk_wood_texture" rgba="0.8 0.8 0.8 1" shininess="0.2" reflectance="0.3" texuniform="false"/>
+    <material name="desk_metal_material" texture="desk_metal_texture" texrepeat="3 3" reflectance="0.7" texuniform="false"/>
+  </asset>
+  <default>
+    <!-- Button default classes -->
+    <default class="button_collision">
+      <geom contype="1" conaffinity="1" rgba="0.8 0.9 0.7 1.0" group="4"/>
+      <joint limited="true" damping="0" stiffness="0" range="-0.005 0"/>
+    </default>
+    <default class="holder_visual">
+      <geom contype="0" conaffinity="0" group="1" material="button_metal_material"/>
+    </default>
+    <default class="light_visual">
+      <geom contype="0" conaffinity="0" group="1"/>
+      <joint limited="true" damping="0" stiffness="0" range="-0.005 0"/>
+    </default>
+    <default class="light_collision">
+      <!-- group 4 is not rendered, apparently -->
+      <geom contype="1" conaffinity="1" rgba="0.8 0.9 0.7 1.0" group="4"/>
+    </default>
+
+    <!-- Desk default classes -->
+    <default class="desk_metal">
+      <geom group="1" contype="0" conaffinity="0" type="mesh" material="desk_metal_material"/>
+    </default>
+    <default class="desk_wood">
+      <geom group="1" contype="0" conaffinity="0" type="mesh" material="desk_wood_material"/>
+    </default>
+    <default class="desk_drawer">
+      <geom contype="1" conaffinity="1" group="3" rgba="1 0 0 1"/>
+      <joint limited="true" damping="2" frictionloss="5" armature="0.1"/>
+    </default>
+    <default class="desk_body">
+      <geom contype="1" conaffinity="1" group="4" rgba="0 1 0 1"/>
+      <joint limited="true" damping="1" frictionloss="0.5" armature=".01"/>
+    </default>
+  </default>
+  <include file="franka_panda_headers.xml"/>
+
+  <visual>
+    <map fogstart="1.5" fogend="5" force="0.1" znear="0.1"/>
+    <quality shadowsize="4096" offsamples="4"/>
+  </visual>
+
+  <worldbody>
+    <camera name="fixed" pos="0 0.535 1.1" quat="1 0 0 0" fovy="45"/>
+    <light directional="true" diffuse=".3 .3 .3" specular="0.3 0.3 0.3" pos="-1 -1 1" dir="1 1 -1"/>
+    <light directional="true" diffuse=".3 .3 .3" specular="0.3 0.3 0.3" pos="1 -1 1" dir="-1 1 -1"/>
+    <light directional="true" diffuse=".3 .3 .3" specular="0.3 0.3 0.3" pos="0 1 1" dir="0 -1 -1"/>
+    <geom name="floor" pos="0 0 0" size="5 5 .1" conaffinity="1" contype="1" type="plane" material="plane_material" condim="3"/>
+
+    <body name="tv" pos="1.3 2.425 1.4">
+      <geom name="tv_bezel" type="box" size="2.4 .03 1.28" pos="0 0.035 0" rgba="0.1 0.1 0.1 1"/>
+      <geom name="tv_screen" material="tv_material" type="box" size="2.3 .000001 1.2" pos="0 0 0" rgba="1 1 1 1"/>
+      <geom name="tv_stand" type="box" size="2.6 0.2 0.1" pos="0 0 -1.35" rgba="0.32 0.137 0.12 1"/>
+    </body>
+
+    <body name="robotdesk_left" pos="0 0 0">
+      <!-- Robot -->
+  <!--     <body pos="0.4 0.02 .775" euler="0 0 1.57"> -->
+      <body pos="0 0.1 0.55" euler="0 0 1.57">
+  <!--       <geom type="cylinder" size=".160 .4" pos="0 0 -.4"/> -->
+  <!--       <geom type="cylinder" size=".160 .05" pos="0 0 0"/> -->
+        <include file="franka_panda.xml"/>
+      </body>
+
+      <!-- Bin -->
+      <body pos="0.4 0.55 0">
+        <geom material="bin_metal_material" type="mesh" mesh="bin" euler="-1.57 0 3.14" group="1" contype="0" conaffinity="0" rgba="0.0 1.0 1.0 1.0"/>
+        <geom type="box" pos="-.12 0 .2" size=".01 .11 .2" euler="0 -0.0872665 0" group="3" rgba="0.0 1.0 1.0 1.0"/>
+        <geom type="box" pos=".12 0 .2" size=".01 .11 .2" euler="0 0.0872665 0" group="3" rgba="0.0 1.0 1.0 1.0"/>
+        <geom type="box" pos="0 -.12 .2" size=".01 .11 .2" euler="0.0872665 0 1.57" group="3" rgba="0.0 1.0 1.0 1.0"/>
+        <geom type="box" pos="0 .12 .2" size=".01 .11 .2" euler="-0.0872665 0 1.57" group="3" rgba="0.0 1.0 1.0 1.0"/>
+        <geom type="box" pos="0 0 .05" size=".1 .1 .005" group="3" rgba="0.0 1.0 1.0 1.0"/>
+      </body>
+
+      <!-- Desk -->
+      <body pos="0 0.85 0">
+        <!-- Main -->
+        <body name="desk" pos="0 0 0" childclass="desk_body">
+          <geom class="desk_wood" type="mesh" mesh="desk_main" euler="-1.57 0 3.14" rgba="2.0 2.0 2.0 1.0"/>
+          <geom type="box" size=".6 .275 .025" pos="0 0 0.735" rgba="0.8 0.9 0.7 1.0" mass="40"/>
+          <geom type="box" size="0.17 0.26 .05" pos="0.42 0 0.66" rgba="0.8 0.9 0.7 1.0"/>
+          <geom type="box" size="0.17 0.26 .05" pos="-0.42 0 0.66" rgba="0.8 0.9 0.7 1.0"/>
+          <geom type="box" size="0.025 0.025 0.305" pos="-0.565 0.235 0.305" rgba="0.8 0.9 0.7 1.0"/>
+          <geom type="box" size="0.025 0.025 0.305" pos="-0.565 -0.235 0.305" rgba="0.8 0.9 0.7 1.0"/>
+          <geom type="box" size="0.025 0.025 0.305" pos="0.565 0.235 0.305" rgba="0.8 0.9 0.7 1.0"/>
+          <geom type="box" size="0.025 0.025 0.305" pos="0.565 -0.235 0.305" rgba="0.8 0.9 0.7 1.0"/>
+          <geom type="box" size="0.6 0.01 0.175" pos="0 0.265 0.935" rgba="0.8 0.9 0.7 1.0"/>
+          <geom type="box" size="0.6 0.11 0.01" pos="0 0.165 1.1" rgba="0.8 0.9 0.7 1.0"/>
+          <geom type="box" size="0.01 0.11 0.175" pos="0.59 .165 .935" rgba="0.8 0.9 0.7 1.0"/>
+          <geom type="box" size="0.01 0.11 0.175" pos="-0.59 .165 .935" rgba="0.8 0.9 0.7 1.0"/>
+          <geom name="desk_middle_divider" type="box" size="0.01 0.11 0.175" pos="0 .165 .935" rgba="0.8 0.9 0.7 1.0"/>
+        </body>
+        <!-- Drawer -->
+        <body name="drawer" pos="0 0 0.655" childclass="desk_drawer">
+          <geom class="desk_wood" type="mesh" mesh="desk_drawer_wood" euler="-1.57 0 3.14" rgba="0.4 0.4 0.4 1.0"/>
+          <geom name="drawer_handle" class="desk_metal" type="mesh" mesh="desk_drawer_handle" euler="-1.57 0 3.14"/>
+          <geom type="box" size=".24 .26 .01" pos="0 0 -0.04" rgba="1.0 1.0 1.0 1.0" mass="2"/>
+          <geom type="box" size=".24 .01 .05" pos="0 .25 0" rgba="0.8 0.9 0.7 1.0"/>
+          <geom type="box" size=".24 .01 .05" pos="0 -.25 0" rgba="0.8 0.9 0.7 1.0"/>
+          <geom type="box" size=".01 .26 .05" pos="-.23 0 0" rgba="0.8 0.9 0.7 1.0"/>
+          <geom type="box" size=".01 .26 .05" pos=".23 0 0" rgba="0.8 0.9 0.7 1.0"/>
+          <geom type="capsule" size=".014 .045" pos=".08203 -.315 .01" euler="1.57 0 0" rgba="0.8 0.9 0.7 1.0"/>
+          <geom type="capsule" size=".014 .045" pos="-.08203 -.315 .01" euler="1.57 0 0" rgba="0.8 0.9 0.7 1.0"/>
+          <geom type="capsule" size=".014 .08" pos="0 -.36 .01" euler="0 1.57 0" rgba="0.8 0.9 0.7 1.0"/>
+          <joint name="drawer_joint" type="slide" pos="0 0 0" axis="0 1 0" limited="true" range="-0.48 0"/>
+        </body>
+        <!-- Slide -->
+        <body name="slide" pos="-0.3 0.04 0.935" childclass="desk_drawer">
+          <geom name="desk_slide_panel" class="desk_wood" type="mesh" mesh="desk_slide_wood" euler="-1.57 0 3.14" rgba="0.4 0.4 0.4 1.0"/>
+          <geom name="desk_slide_handle" class="desk_metal" type="mesh" mesh="desk_slide_handle" euler="-1.57 0 3.14"/>
+          <geom type="box" size=".3 .01 .175" pos="0 0 0" rgba="0.8 0.9 0.7 1.0" mass="1"/>
+          <geom type="capsule" size=".014 .042" pos="0 -.065 .08302" euler="1.57 0 0" rgba="0.8 0.9 0.7 1.0"/>
+          <geom type="capsule" size=".014 .042" pos="0 -.065 -.08302" euler="1.57 0 0" rgba="0.8 0.9 0.7 1.0"/>
+          <geom type="capsule" size=".014 .08" pos="0 -.11 0" euler="0 0 0" rgba="0.8 0.9 0.7 1.0"/>
+          <site name="slide_handle" type="sphere" size=".01" pos="0 -.11 0"/>
+          <joint name="slide_joint" type="slide" pos="0 0 0" axis="1 0 0" limited="true" range="0 .6"/>
+        </body>
+      </body>
+
+      <!-- Buttons -->
+      <body pos="-.25 0.625 .76">
+        <body name="red_button" pos="-.2 0 0" childclass="button_collision">
+          <geom type="cylinder" size=".035 .01" pos="0 0 0" class="holder_visual"/>
+          <body>
+            <geom type="cylinder" size=".03 .01" pos="0 0 .02" rgba="1.0 0 0 1.0" group="1" mass="0.01"/>
+            <joint name="red_button" type="slide" pos="0 0 0" axis="0 0 1" damping="1" stiffness="10"/>
+          </body>
+        </body>
+        <body name="green_button" pos="0 0 0" childclass="button_collision">
+          <geom type="cylinder" size=".035 .01" pos="0 0 0" class="holder_visual"/>
+          <body>
+            <geom type="cylinder" size=".03 .01" pos="0 0 .02" rgba="0 1.0 0 1.0" group="1" mass="0.01"/>
+            <joint name="green_button" type="slide" pos="0 0 0" axis="0 0 1" damping="1" stiffness="10"/>
+          </body>
+        </body>
+        <body name="blue_button" pos="0.2 0 0" childclass="button_collision">
+          <geom type="cylinder" size=".035 .01" pos="0 0 0" class="holder_visual"/>
+          <body>
+            <geom type="cylinder" size=".03 .01" pos="0 0 .02" rgba="0 0 1.0 1.0" group="1" mass="0.01"/>
+            <joint name="blue_button" type="slide" pos="0 0 0" axis="0 0 1" damping="1" stiffness="10"/>
+          </body>
+        </body>
+      </body>
+
+      <!-- Lights -->
+      <body pos="-.25 0.85 1.1">
+        <body name="red_light" pos="-.2 .15 0" childclass="light_visual">
+          <geom type="mesh" mesh="lights_holder" euler="-1.57 0 3.14"/>
+          <geom name="red_light_background" type="cylinder" size=".06 .001" pos="0 0 .011" rgba="0 0 0 1.0" group="1" contype="0" conaffinity="0"/>
+          <geom name="red_light_collision" type="cylinder" size=".08 .02" pos="0 0 .011" class="light_collision"/>
+          <body>
+            <geom name="red_light_rise_cylinder" type="cylinder" size=".06 .0075" rgba="1 0 0 .4" group="1" mass="0.01"/>
+            <joint name="red_light" type="slide" axis="0 0 -1"/>
+          </body>
+          <!-- `light_collision` is not rendered (group 4), so exceeding the blocker's height = 0.011 + 0.01 = 0.012 suffices -->
+          <!-- 0.012 - 0.0075 = 0.0045 -->
+          <geom name="red_light_overlay" pos="0 0 0.005" type="cylinder" size=".06 .0075" rgba="1 0 0 0" group="1"/>
+          <geom name="red_light_neg_overlay" pos="0 0 0.005" type="cylinder" size=".06 .0075" rgba="0.3 0.3 0.3 0" group="1"/>
+        </body>
+        <body name="green_light" pos="0 .15 0" childclass="light_visual">
+          <geom type="mesh" mesh="lights_holder" euler="-1.57 0 3.14"/>
+          <geom name="green_light_background" type="cylinder" size=".06 .001" pos="0 0 .011" rgba="0 0 0 1.0" group="1" contype="0" conaffinity="0"/>
+          <geom name="green_light_collision" type="cylinder" size=".08 .02" pos="0 0 .011" class="light_collision"/>
+          <body>
+            <geom name="green_light_rise_cylinder" type="cylinder" size=".06 .0075" rgba="0 1 0 .4" group="1" mass="0.01"/>
+            <joint name="green_light" type="slide" axis="0 0 -1"/>
+          </body>
+          <geom name="green_light_overlay" pos="0 0 0.005" type="cylinder" size=".06 .0075" rgba="0 1 0 0" group="1" mass="0.01"/>
+          <geom name="green_light_neg_overlay" pos="0 0 0.005" type="cylinder" size=".06 .0075" rgba="0.3 0.3 0.3 0" group="1" mass="0.01"/>
+        </body>
+        <body name="blue_light" pos=".2 .15 0" childclass="light_visual">
+          <geom type="mesh" mesh="lights_holder" euler="-1.57 0 3.14"/>
+          <geom name="blue_light_background" type="cylinder" size=".06 .001" pos="0 0 .011" rgba="0 0 0 1.0" group="1" contype="0" conaffinity="0"/>
+          <geom name="blue_light_collision" type="cylinder" size=".08 .02" pos="0 0 .011" class="light_collision"/>
+          <body>
+            <geom name="blue_light_rise_cylinder" type="cylinder" size=".06 .0075" rgba="0 0 1 .4" group="1" mass="0.01"/>
+            <joint name="blue_light" type="slide" axis="0 0 -1"/>
+          </body>
+          <geom name="blue_light_overlay" pos="0 0 0.005" type="cylinder" size=".06 .0075" rgba="0 0 1 0" group="1" mass="0.01"/>
+          <geom name="blue_light_neg_overlay" pos="0 0 0.005" type="cylinder" size=".06 .0075" rgba="0.3 0.3 0.3 0" group="1" mass="0.01"/>
+        </body>
+      </body>
+    </body>
+
+    <!-- Blocks -->
+    <!-- (x, y) is randomized from (-0.4, 0.7) to (0.08, 0.78) -->
+    <body name="ball" pos="-0.4 0.7 0.799" euler="0 1.57 0">
+        <geom type="sphere" size=".04 .04 .04" rgba="1.0 0.0 0.35 1.0" />
+        <joint name="ball" type="free" limited="false"/>
+    </body>
+
+    <!-- (x, y) is randomized from (0.15, 0.78) to (0.45, 0.83) -->
+    <body name="upright_block" pos="0.15 0.78 0.84978449" euler="0 0 0">
+        <geom type="box" size=".023 .023 .09" rgba="0.7 0.9 0.9 1.0"/>
+        <joint name="upright_block" type="free" limited="false"/>
+    </body>
+
+    <!-- (x, y) is randomized from (0.15, 0.63) to (0.45, 0.7) -->
+    <body name="flat_block" pos="0.15 0.63 0.77478449" euler="0 0 0">
+        <geom type="box" size=".08 .035 .015" rgba="0.61 1.0 0.71 1.0" />
+        <joint name="flat_block" type="free" limited="false"/>
+    </body>
+
+    <body name="desk_middle" pos="1.3 0 0">
+      <!-- Bin -->
+      <body pos="0.4 0.55 0">
+        <geom material="bin_metal_material" type="mesh" mesh="bin" euler="-1.57 0 3.14" group="1" contype="0" conaffinity="0" rgba="0.0 1.0 1.0 1.0"/>
+        <geom type="box" pos="-.12 0 .2" size=".01 .11 .2" euler="0 -0.0872665 0" group="3" rgba="0.0 1.0 1.0 1.0"/>
+        <geom type="box" pos=".12 0 .2" size=".01 .11 .2" euler="0 0.0872665 0" group="3" rgba="0.0 1.0 1.0 1.0"/>
+        <geom type="box" pos="0 -.12 .2" size=".01 .11 .2" euler="0.0872665 0 1.57" group="3" rgba="0.0 1.0 1.0 1.0"/>
+        <geom type="box" pos="0 .12 .2" size=".01 .11 .2" euler="-0.0872665 0 1.57" group="3" rgba="0.0 1.0 1.0 1.0"/>
+        <geom type="box" pos="0 0 .05" size=".1 .1 .005" group="3" rgba="0.0 1.0 1.0 1.0"/>
+      </body>
+
+      <!-- Desk -->
+      <body pos="0 0.85 0">
+        <!-- Main -->
+        <body pos="0 0 0" childclass="desk_body">
+          <geom class="desk_wood" type="mesh" mesh="desk_main" euler="-1.57 0 3.14" rgba="2.0 2.0 2.0 1.0"/>
+          <geom type="box" size=".6 .275 .025" pos="0 0 0.735" rgba="0.8 0.9 0.7 1.0" mass="40"/>
+          <geom type="box" size="0.17 0.26 .05" pos="0.42 0 0.66" rgba="0.8 0.9 0.7 1.0"/>
+          <geom type="box" size="0.17 0.26 .05" pos="-0.42 0 0.66" rgba="0.8 0.9 0.7 1.0"/>
+          <geom type="box" size="0.025 0.025 0.305" pos="-0.565 0.235 0.305" rgba="0.8 0.9 0.7 1.0"/>
+          <geom type="box" size="0.025 0.025 0.305" pos="-0.565 -0.235 0.305" rgba="0.8 0.9 0.7 1.0"/>
+          <geom type="box" size="0.025 0.025 0.305" pos="0.565 0.235 0.305" rgba="0.8 0.9 0.7 1.0"/>
+          <geom type="box" size="0.025 0.025 0.305" pos="0.565 -0.235 0.305" rgba="0.8 0.9 0.7 1.0"/>
+          <geom type="box" size="0.6 0.01 0.175" pos="0 0.265 0.935" rgba="0.8 0.9 0.7 1.0"/>
+          <geom type="box" size="0.6 0.11 0.01" pos="0 0.165 1.1" rgba="0.8 0.9 0.7 1.0"/>
+          <geom type="box" size="0.01 0.11 0.175" pos="0.59 .165 .935" rgba="0.8 0.9 0.7 1.0"/>
+          <geom type="box" size="0.01 0.11 0.175" pos="-0.59 .165 .935" rgba="0.8 0.9 0.7 1.0"/>
+          <geom type="box" size="0.01 0.11 0.175" pos="0 .165 .935" rgba="0.8 0.9 0.7 1.0"/>
+        </body>
+        <!-- Drawer -->
+        <body pos="0 0 0.655" childclass="desk_drawer">
+          <geom class="desk_wood" type="mesh" mesh="desk_drawer_wood" euler="-1.57 0 3.14" rgba="0.4 0.4 0.4 1.0"/>
+          <geom class="desk_metal" type="mesh" mesh="desk_drawer_handle" euler="-1.57 0 3.14"/>
+          <geom type="box" size=".24 .26 .01" pos="0 0 -0.04" rgba="1.0 1.0 1.0 1.0" mass="2"/>
+          <geom type="box" size=".24 .01 .05" pos="0 .25 0" rgba="0.8 0.9 0.7 1.0"/>
+          <geom type="box" size=".24 .01 .05" pos="0 -.25 0" rgba="0.8 0.9 0.7 1.0"/>
+          <geom type="box" size=".01 .26 .05" pos="-.23 0 0" rgba="0.8 0.9 0.7 1.0"/>
+          <geom type="box" size=".01 .26 .05" pos=".23 0 0" rgba="0.8 0.9 0.7 1.0"/>
+          <geom type="capsule" size=".014 .045" pos=".08203 -.315 .01" euler="1.57 0 0" rgba="0.8 0.9 0.7 1.0"/>
+          <geom type="capsule" size=".014 .045" pos="-.08203 -.315 .01" euler="1.57 0 0" rgba="0.8 0.9 0.7 1.0"/>
+          <geom type="capsule" size=".014 .08" pos="0 -.36 .01" euler="0 1.57 0" rgba="0.8 0.9 0.7 1.0"/>
+          <joint type="slide" pos="0 0 0" axis="0 1 0" limited="true" range="-0.48 0"/>
+        </body>
+        <!-- Slide -->
+        <body pos="-0.3 0.04 0.935" childclass="desk_drawer">
+          <geom class="desk_wood" type="mesh" mesh="desk_slide_wood" euler="-1.57 0 3.14" rgba="0.4 0.4 0.4 1.0"/>
+          <geom class="desk_metal" type="mesh" mesh="desk_slide_handle" euler="-1.57 0 3.14"/>
+          <geom type="box" size=".3 .01 .175" pos="0 0 0" rgba="0.8 0.9 0.7 1.0" mass="1"/>
+          <geom type="capsule" size=".014 .042" pos="0 -.065 .08302" euler="1.57 0 0" rgba="0.8 0.9 0.7 1.0"/>
+          <geom type="capsule" size=".014 .042" pos="0 -.065 -.08302" euler="1.57 0 0" rgba="0.8 0.9 0.7 1.0"/>
+          <geom type="capsule" size=".014 .08" pos="0 -.11 0" euler="0 0 0" rgba="0.8 0.9 0.7 1.0"/>
+          <site type="sphere" size=".01" pos="0 -.11 0"/>
+          <joint type="slide" pos="0 0 0" axis="1 0 0" limited="true" range="0 .6"/>
+        </body>
+      </body>
+
+      <!-- Buttons -->
+      <body pos="-.25 0.625 .76">
+        <body pos="-.2 0 0" childclass="button_collision">
+          <geom type="cylinder" size=".035 .01" pos="0 0 0" class="holder_visual"/>
+          <body>
+            <geom type="cylinder" size=".03 .01" pos="0 0 .02" rgba="1.0 0 0 1.0" group="1" mass="0.01"/>
+            <joint type="slide" pos="0 0 0" axis="0 0 1" damping="1" stiffness="10"/>
+          </body>
+        </body>
+        <body pos="0 0 0" childclass="button_collision">
+          <geom type="cylinder" size=".035 .01" pos="0 0 0" class="holder_visual"/>
+          <body>
+            <geom type="cylinder" size=".03 .01" pos="0 0 .02" rgba="0 1.0 0 1.0" group="1" mass="0.01"/>
+            <joint type="slide" pos="0 0 0" axis="0 0 1" damping="1" stiffness="10"/>
+          </body>
+        </body>
+        <body pos="0.2 0 0" childclass="button_collision">
+          <geom type="cylinder" size=".035 .01" pos="0 0 0" class="holder_visual"/>
+          <body>
+            <geom type="cylinder" size=".03 .01" pos="0 0 .02" rgba="0 0 1.0 1.0" group="1" mass="0.01"/>
+            <joint type="slide" pos="0 0 0" axis="0 0 1" damping="1" stiffness="10"/>
+          </body>
+        </body>
+      </body>
+
+      <!-- Lights -->
+      <body pos="-.25 0.85 1.1">
+        <body name="red_light_middle" pos="-.2 .15 0" childclass="light_visual">
+          <geom type="mesh" mesh="lights_holder" euler="-1.57 0 3.14"/>
+          <geom name="red_light_background_middle" type="cylinder" size=".06 .001" pos="0 0 .011" rgba="0 0 0 1.0" group="1" contype="0" conaffinity="0"/>
+          <geom name="red_light_collision_middle" type="cylinder" size=".08 .02" pos="0 0 .011" class="light_collision"/>
+          <body>
+            <geom name="red_light_rise_cylinder_middle" type="cylinder" size=".06 .0075" rgba="1 0 0 .4" group="1" mass="0.01"/>
+            <joint name="red_light_middle" type="slide" axis="0 0 -1"/>
+          </body>
+          <!-- `light_collision` is not rendered (group 4), so exceeding the blocker's height = 0.011 + 0.01 = 0.012 suffices -->
+          <!-- 0.012 - 0.0075 = 0.0045 -->
+          <geom name="red_light_overlay_middle" pos="0 0 0.005" type="cylinder" size=".06 .0075" rgba="1 0 0 0" group="1"/>
+          <geom name="red_light_neg_overlay_middle" pos="0 0 0.005" type="cylinder" size=".06 .0075" rgba="0.3 0.3 0.3 0" group="1"/>
+        </body>
+        <body name="green_light_middle" pos="0 .15 0" childclass="light_visual">
+          <geom type="mesh" mesh="lights_holder" euler="-1.57 0 3.14"/>
+          <geom name="green_light_background_middle" type="cylinder" size=".06 .001" pos="0 0 .011" rgba="0 0 0 1.0" group="1" contype="0" conaffinity="0"/>
+          <geom name="green_light_collision_middle" type="cylinder" size=".08 .02" pos="0 0 .011" class="light_collision"/>
+          <body>
+            <geom name="green_light_rise_cylinder_middle" type="cylinder" size=".06 .0075" rgba="0 1 0 .4" group="1" mass="0.01"/>
+            <joint name="green_light_middle" type="slide" axis="0 0 -1"/>
+          </body>
+          <geom name="green_light_overlay_middle" pos="0 0 0.005" type="cylinder" size=".06 .0075" rgba="0 1 0 0" group="1" mass="0.01"/>
+          <geom name="green_light_neg_overlay_middle" pos="0 0 0.005" type="cylinder" size=".06 .0075" rgba="0.3 0.3 0.3 0" group="1" mass="0.01"/>
+        </body>
+        <body name="blue_light_middle" pos=".2 .15 0" childclass="light_visual">
+          <geom type="mesh" mesh="lights_holder" euler="-1.57 0 3.14"/>
+          <geom name="blue_light_background_middle" type="cylinder" size=".06 .001" pos="0 0 .011" rgba="0 0 0 1.0" group="1" contype="0" conaffinity="0"/>
+          <geom name="blue_light_collision_middle" type="cylinder" size=".08 .02" pos="0 0 .011" class="light_collision"/>
+          <body>
+            <geom name="blue_light_rise_cylinder_middle" type="cylinder" size=".06 .0075" rgba="0 0 1 .4" group="1" mass="0.01"/>
+            <joint name="blue_light_middle" type="slide" axis="0 0 -1"/>
+          </body>
+          <geom name="blue_light_overlay_middle" pos="0 0 0.005" type="cylinder" size=".06 .0075" rgba="0 0 1 0" group="1" mass="0.01"/>
+          <geom name="blue_light_neg_overlay_middle" pos="0 0 0.005" type="cylinder" size=".06 .0075" rgba="0.3 0.3 0.3 0" group="1" mass="0.01"/>
+        </body>
+      </body>
+    </body>
+
+
+    <body name="desk_right" pos="2.6 0 0">
+      <!-- Bin -->
+      <body pos="0.4 0.55 0">
+        <geom material="bin_metal_material" type="mesh" mesh="bin" euler="-1.57 0 3.14" group="1" contype="0" conaffinity="0" rgba="0.0 1.0 1.0 1.0"/>
+        <geom type="box" pos="-.12 0 .2" size=".01 .11 .2" euler="0 -0.0872665 0" group="3" rgba="0.0 1.0 1.0 1.0"/>
+        <geom type="box" pos=".12 0 .2" size=".01 .11 .2" euler="0 0.0872665 0" group="3" rgba="0.0 1.0 1.0 1.0"/>
+        <geom type="box" pos="0 -.12 .2" size=".01 .11 .2" euler="0.0872665 0 1.57" group="3" rgba="0.0 1.0 1.0 1.0"/>
+        <geom type="box" pos="0 .12 .2" size=".01 .11 .2" euler="-0.0872665 0 1.57" group="3" rgba="0.0 1.0 1.0 1.0"/>
+        <geom type="box" pos="0 0 .05" size=".1 .1 .005" group="3" rgba="0.0 1.0 1.0 1.0"/>
+      </body>
+
+      <!-- Desk -->
+      <body pos="0 0.85 0">
+        <!-- Main -->
+        <body pos="0 0 0" childclass="desk_body">
+          <geom class="desk_wood" type="mesh" mesh="desk_main" euler="-1.57 0 3.14" rgba="2.0 2.0 2.0 1.0"/>
+          <geom type="box" size=".6 .275 .025" pos="0 0 0.735" rgba="0.8 0.9 0.7 1.0" mass="40"/>
+          <geom type="box" size="0.17 0.26 .05" pos="0.42 0 0.66" rgba="0.8 0.9 0.7 1.0"/>
+          <geom type="box" size="0.17 0.26 .05" pos="-0.42 0 0.66" rgba="0.8 0.9 0.7 1.0"/>
+          <geom type="box" size="0.025 0.025 0.305" pos="-0.565 0.235 0.305" rgba="0.8 0.9 0.7 1.0"/>
+          <geom type="box" size="0.025 0.025 0.305" pos="-0.565 -0.235 0.305" rgba="0.8 0.9 0.7 1.0"/>
+          <geom type="box" size="0.025 0.025 0.305" pos="0.565 0.235 0.305" rgba="0.8 0.9 0.7 1.0"/>
+          <geom type="box" size="0.025 0.025 0.305" pos="0.565 -0.235 0.305" rgba="0.8 0.9 0.7 1.0"/>
+          <geom type="box" size="0.6 0.01 0.175" pos="0 0.265 0.935" rgba="0.8 0.9 0.7 1.0"/>
+          <geom type="box" size="0.6 0.11 0.01" pos="0 0.165 1.1" rgba="0.8 0.9 0.7 1.0"/>
+          <geom type="box" size="0.01 0.11 0.175" pos="0.59 .165 .935" rgba="0.8 0.9 0.7 1.0"/>
+          <geom type="box" size="0.01 0.11 0.175" pos="-0.59 .165 .935" rgba="0.8 0.9 0.7 1.0"/>
+          <geom type="box" size="0.01 0.11 0.175" pos="0 .165 .935" rgba="0.8 0.9 0.7 1.0"/>
+        </body>
+        <!-- Drawer -->
+        <body pos="0 0 0.655" childclass="desk_drawer">
+          <geom class="desk_wood" type="mesh" mesh="desk_drawer_wood" euler="-1.57 0 3.14" rgba="0.4 0.4 0.4 1.0"/>
+          <geom class="desk_metal" type="mesh" mesh="desk_drawer_handle" euler="-1.57 0 3.14"/>
+          <geom type="box" size=".24 .26 .01" pos="0 0 -0.04" rgba="1.0 1.0 1.0 1.0" mass="2"/>
+          <geom type="box" size=".24 .01 .05" pos="0 .25 0" rgba="0.8 0.9 0.7 1.0"/>
+          <geom type="box" size=".24 .01 .05" pos="0 -.25 0" rgba="0.8 0.9 0.7 1.0"/>
+          <geom type="box" size=".01 .26 .05" pos="-.23 0 0" rgba="0.8 0.9 0.7 1.0"/>
+          <geom type="box" size=".01 .26 .05" pos=".23 0 0" rgba="0.8 0.9 0.7 1.0"/>
+          <geom type="capsule" size=".014 .045" pos=".08203 -.315 .01" euler="1.57 0 0" rgba="0.8 0.9 0.7 1.0"/>
+          <geom type="capsule" size=".014 .045" pos="-.08203 -.315 .01" euler="1.57 0 0" rgba="0.8 0.9 0.7 1.0"/>
+          <geom type="capsule" size=".014 .08" pos="0 -.36 .01" euler="0 1.57 0" rgba="0.8 0.9 0.7 1.0"/>
+          <joint type="slide" pos="0 0 0" axis="0 1 0" limited="true" range="-0.48 0"/>
+        </body>
+        <!-- Slide -->
+        <body pos="-0.3 0.04 0.935" childclass="desk_drawer">
+          <geom class="desk_wood" type="mesh" mesh="desk_slide_wood" euler="-1.57 0 3.14" rgba="0.4 0.4 0.4 1.0"/>
+          <geom class="desk_metal" type="mesh" mesh="desk_slide_handle" euler="-1.57 0 3.14"/>
+          <geom type="box" size=".3 .01 .175" pos="0 0 0" rgba="0.8 0.9 0.7 1.0" mass="1"/>
+          <geom type="capsule" size=".014 .042" pos="0 -.065 .08302" euler="1.57 0 0" rgba="0.8 0.9 0.7 1.0"/>
+          <geom type="capsule" size=".014 .042" pos="0 -.065 -.08302" euler="1.57 0 0" rgba="0.8 0.9 0.7 1.0"/>
+          <geom type="capsule" size=".014 .08" pos="0 -.11 0" euler="0 0 0" rgba="0.8 0.9 0.7 1.0"/>
+          <site type="sphere" size=".01" pos="0 -.11 0"/>
+          <joint type="slide" pos="0 0 0" axis="1 0 0" limited="true" range="0 .6"/>
+        </body>
+      </body>
+
+      <!-- Buttons -->
+      <body pos="-.25 0.625 .76">
+        <body pos="-.2 0 0" childclass="button_collision">
+          <geom type="cylinder" size=".035 .01" pos="0 0 0" class="holder_visual"/>
+          <body>
+            <geom type="cylinder" size=".03 .01" pos="0 0 .02" rgba="1.0 0 0 1.0" group="1" mass="0.01"/>
+            <joint type="slide" pos="0 0 0" axis="0 0 1" damping="1" stiffness="10"/>
+          </body>
+        </body>
+        <body pos="0 0 0" childclass="button_collision">
+          <geom type="cylinder" size=".035 .01" pos="0 0 0" class="holder_visual"/>
+          <body>
+            <geom type="cylinder" size=".03 .01" pos="0 0 .02" rgba="0 1.0 0 1.0" group="1" mass="0.01"/>
+            <joint type="slide" pos="0 0 0" axis="0 0 1" damping="1" stiffness="10"/>
+          </body>
+        </body>
+        <body pos="0.2 0 0" childclass="button_collision">
+          <geom type="cylinder" size=".035 .01" pos="0 0 0" class="holder_visual"/>
+          <body>
+            <geom type="cylinder" size=".03 .01" pos="0 0 .02" rgba="0 0 1.0 1.0" group="1" mass="0.01"/>
+            <joint type="slide" pos="0 0 0" axis="0 0 1" damping="1" stiffness="10"/>
+          </body>
+        </body>
+      </body>
+
+      <!-- Lights -->
+      <body pos="-.25 0.85 1.1">
+        <body name="red_light_right" pos="-.2 .15 0" childclass="light_visual">
+          <geom type="mesh" mesh="lights_holder" euler="-1.57 0 3.14"/>
+          <geom name="red_light_background_right" type="cylinder" size=".06 .001" pos="0 0 .011" rgba="0 0 0 1.0" group="1" contype="0" conaffinity="0"/>
+          <geom name="red_light_collision_right" type="cylinder" size=".08 .02" pos="0 0 .011" class="light_collision"/>
+          <body>
+            <geom name="red_light_rise_cylinder_right" type="cylinder" size=".06 .0075" rgba="1 0 0 .4" group="1" mass="0.01"/>
+            <joint name="red_light_right" type="slide" axis="0 0 -1"/>
+          </body>
+          <!-- `light_collision` is not rendered (group 4), so exceeding the blocker's height = 0.011 + 0.01 = 0.012 suffices -->
+          <!-- 0.012 - 0.0075 = 0.0045 -->
+          <geom name="red_light_overlay_right" pos="0 0 0.005" type="cylinder" size=".06 .0075" rgba="1 0 0 0" group="1"/>
+          <geom name="red_light_neg_overlay_right" pos="0 0 0.005" type="cylinder" size=".06 .0075" rgba="0.3 0.3 0.3 0" group="1"/>
+        </body>
+        <body name="green_light_right" pos="0 .15 0" childclass="light_visual">
+          <geom type="mesh" mesh="lights_holder" euler="-1.57 0 3.14"/>
+          <geom name="green_light_background_right" type="cylinder" size=".06 .001" pos="0 0 .011" rgba="0 0 0 1.0" group="1" contype="0" conaffinity="0"/>
+          <geom name="green_light_collision_right" type="cylinder" size=".08 .02" pos="0 0 .011" class="light_collision"/>
+          <body>
+            <geom name="green_light_rise_cylinder_right" type="cylinder" size=".06 .0075" rgba="0 1 0 .4" group="1" mass="0.01"/>
+            <joint name="green_light_right" type="slide" axis="0 0 -1"/>
+          </body>
+          <geom name="green_light_overlay_right" pos="0 0 0.005" type="cylinder" size=".06 .0075" rgba="0 1 0 0" group="1" mass="0.01"/>
+          <geom name="green_light_neg_overlay_right" pos="0 0 0.005" type="cylinder" size=".06 .0075" rgba="0.3 0.3 0.3 0" group="1" mass="0.01"/>
+        </body>
+        <body name="blue_light_right" pos=".2 .15 0" childclass="light_visual">
+          <geom type="mesh" mesh="lights_holder" euler="-1.57 0 3.14"/>
+          <geom name="blue_light_background_right" type="cylinder" size=".06 .001" pos="0 0 .011" rgba="0 0 0 1.0" group="1" contype="0" conaffinity="0"/>
+          <geom name="blue_light_collision_right" type="cylinder" size=".08 .02" pos="0 0 .011" class="light_collision"/>
+          <body>
+            <geom name="blue_light_rise_cylinder_right" type="cylinder" size=".06 .0075" rgba="0 0 1 .4" group="1" mass="0.01"/>
+            <joint name="blue_light_right" type="slide" axis="0 0 -1"/>
+          </body>
+          <geom name="blue_light_overlay_right" pos="0 0 0.005" type="cylinder" size=".06 .0075" rgba="0 0 1 0" group="1" mass="0.01"/>
+          <geom name="blue_light_neg_overlay_right" pos="0 0 0.005" type="cylinder" size=".06 .0075" rgba="0.3 0.3 0.3 0" group="1" mass="0.01"/>
+        </body>
+      </body>
+    </body>
+
+  </worldbody>
+
+  <equality>
+    <joint joint1="red_button" joint2="red_light" polycoef="0 1 0 0 0"/>
+    <joint joint1="blue_button" joint2="blue_light" polycoef="0 1 0 0 0"/>
+    <joint joint1="green_button" joint2="green_light" polycoef="0 1 0 0 0"/>
+  </equality>
+</mujocoinclude>
