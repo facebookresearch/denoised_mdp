@@ -1,8 +1,10 @@
 # Denoised MDPs: Learning World Models Better Than The World Itself
 
+**Tongzhou Wang, Simon S. Du, Antonio Torralba, Phillip Isola, Amy Zhang, Yuandong Tian**
+
 We provide a PyTorch implementation of [Denoised MDPs: Learning World Models Better Than The World Itself](https://ssnl.github.io/denoised_mdp), published in ICML 2022.
 
-+ [arXiv (Coming Soon)](./)
++ [arXiv](https://arxiv.org/abs/2206.15477)
 + [Project Page](https://ssnl.github.io/denoised_mdp)
 
 The raw real world is noisy. How can reinforcement learning agent successfully learn with such raw data, where signals can be strongly entangled with noises? Denoised MDP characterizes information into four distinct types, based on controllability and relation to rewards, and proposes to extract a state representation space containing only information both **controllable** and **reward-relevant**. Under this view, several prior works can be seen as insufficiently removing noisy information.
