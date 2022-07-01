@@ -7,7 +7,7 @@ We provide a PyTorch implementation of [Denoised MDPs: Learning World Models Bet
 + [arXiv](https://arxiv.org/abs/2206.15477)
 + [Project Page](https://ssnl.github.io/denoised_mdp)
 
-The raw real world is noisy. How can reinforcement learning agent successfully learn with such raw data, where signals can be strongly entangled with noises? Denoised MDP characterizes information into four distinct types, based on controllability and relation to rewards, and proposes to extract a state representation space containing only information both **controllable** and **reward-relevant**. Under this view, several prior works can be seen as insufficiently removing noisy information.
+The raw real world is noisy. How can reinforcement learning agent successfully learn with such raw data, where signals can be strongly entangled with noises? Denoised MDP characterizes information into four distinct types, based on controllability and relation with rewards, and proposes to extract a state representation space containing only information both **controllable** and **reward-relevant**. Under this view, several prior works can be seen as insufficiently removing noisy information.
 
 To properly extract *only* the useful signal, Denoised MDP considers novel factorized MDP transition structures, where **signal** representation and **noise** representation are separated into distinct latent spaces. The state abstraction (i.e., representation learning) problem is turned into a regularized model fitting problem: fitting the factorized forward model to collected trajectories, while requiring the **signal** latents to be minimally informative of the raw observations.
 
