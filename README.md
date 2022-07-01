@@ -1,6 +1,6 @@
 # Denoised MDPs: Learning World Models Better Than The World Itself
 
-**Tongzhou Wang, Simon S. Du, Antonio Torralba, Phillip Isola, Amy Zhang, Yuandong Tian**
+**[Tongzhou Wang](https://ssnl.github.io/), [Simon S. Du](https://simonshaoleidu.com/), [Antonio Torralba](https://web.mit.edu/torralba/www/), [Phillip Isola](https://web.mit.edu/phillipi/), [Amy Zhang](https://amyzhang.github.io/), [Yuandong Tian](https://yuandong-tian.com/)**
 
 We provide a PyTorch implementation of [Denoised MDPs: Learning World Models Better Than The World Itself](https://ssnl.github.io/denoised_mdp), published in ICML 2022.
 
