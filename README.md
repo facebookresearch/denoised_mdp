@@ -15,9 +15,9 @@ The resulting variational formulation (derivation in paper) successfully disenta
 
 ## Visualizations
 
-For environments with distinct types of noises, we visualize latent factorization idenfitied by Denoised MDP, and other baseline methods. Only Denoised MDP successfully disentangle signal from noises across all environments.
+For environments with distinct types of noises, we visualize latent factorization idenfitied by Denoised MDP, and other baseline methods. **Only** Denoised MDP successfully disentangle signal from noises across **all environments**.
 
-+ **Task:** Press green button to shift TV hue to green. <br>
++ **Task:** Press green button to shift TV hue to green ([a RoboDesk variant](https://github.com/SsnL/robodesk)). <br>
   **True Signal:** Robot joint position, TV green-ness, Green light on desk. <br>
   **True Noise:** Lighting, Camera, TV content, Imperfect sensor.
 
