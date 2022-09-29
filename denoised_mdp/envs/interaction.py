@@ -46,7 +46,8 @@ class StateProtocol(Protocol):
 StateT = TypeVar('StateT', bound=StateProtocol)
 
 
-class EnvInteractData(NamedTuple, Generic[StateT]):  # thank god we py37 https://stackoverflow.com/a/50531189
+@dataclasses.dataclass
+class EnvInteractData(Generic[StateT]):  # thank god we py37 https://stackoverflow.com/a/50531189
     r"""
     All information about the last step taken.
     """
