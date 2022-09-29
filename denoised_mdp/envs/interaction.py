@@ -10,6 +10,9 @@ import sys
 if sys.version_info < (3, 8):
     from typing_extensions import Protocol
 
+if sys.version_info < (3, 11):
+    from typing_extensions import NamedTuple
+
 import abc
 import contextlib
 import dataclasses
@@ -46,8 +49,7 @@ class StateProtocol(Protocol):
 StateT = TypeVar('StateT', bound=StateProtocol)
 
 
-@dataclasses.dataclass
-class EnvInteractData(Generic[StateT]):  # thank god we py37 https://stackoverflow.com/a/50531189
+class EnvInteractData(NamedTuple, Generic[StateT]):  # thank god we py37 https://stackoverflow.com/a/50531189
     r"""
     All information about the last step taken.
     """
