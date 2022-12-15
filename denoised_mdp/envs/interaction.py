@@ -10,7 +10,7 @@ import sys
 if sys.version_info < (3, 8):
     from typing_extensions import Protocol
 
-if sys.version_info < (3, 11):
+if (3, 9) <= sys.version_info < (3, 11):
     from typing_extensions import NamedTuple
 
 import abc

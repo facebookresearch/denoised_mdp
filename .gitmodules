@@ -1,0 +1,3 @@
+[submodule "denoised_mdp/envs/robodesk/robodesk"]
+	path = denoised_mdp/envs/robodesk/robodesk
+	url = git@github.com:ssnl/robodesk.git

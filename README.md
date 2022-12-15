@@ -73,8 +73,8 @@ numpy>=1.17.0
 PIL
 tensorboardX>=2.5
 attrs>=21.4.0
-hydra-core>=1.2.0
-omegaconf>=2.2.1
+hydra-core==1.2.0
+omegaconf==2.2.1
 mujoco
 dm_control
 ```
