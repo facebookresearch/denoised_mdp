@@ -44,7 +44,7 @@ class TransitionPartSizeSpec:
 
 def transition_model_parser(embedding_size, hidden_size,
                             x: TransitionPartSizeSpec, y: TransitionPartSizeSpec, z: TransitionPartSizeSpec,
-                            dense_activation_fn, min_stddev, *, env: 'AutoResetEnvBase'):
+                            dense_activation_fn, min_stddev, z_prior_uses_y, *, env: 'AutoResetEnvBase'):
     return TransitionModel(
         x.belief_size,
         x.state_size,
@@ -57,6 +57,7 @@ def transition_model_parser(embedding_size, hidden_size,
         embedding_size,
         activation_function=dense_activation_fn,
         min_stddev=min_stddev,
+        z_prior_uses_y=z_prior_uses_y,
     )
 
 
@@ -75,6 +76,7 @@ class TransitionModelConfig:
     y: TransitionPartSizeSpec = attrs.Factory(lambda: TransitionPartSizeSpec(belief_size=120, state_size=20))
     z: TransitionPartSizeSpec = attrs.Factory(lambda: TransitionPartSizeSpec(belief_size=0, state_size=0))
     min_stddev: float = attrs.field(default=0.1, validator=attrs.validators.gt(0))
+    z_prior_uses_y: bool = True
 
 
 

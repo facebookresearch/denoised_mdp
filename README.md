@@ -129,6 +129,26 @@ Default behaviors:
 
 We use [Hydra](https://hydra.cc/) to handle argument specification. You can use Hydra's overriding syntax to specify all sorts of config options. See [`config.py`](./config.py) for the complete set of options. Additionally, one can also check the `config.yaml` file generated in output directory for all options.
 
+### Figure 2c Variant with `x`, `y` and `z` Latents
+
+To use the Figure 2c variant with three sets of latents `x`, `y`, and `z`, set
+```sh
+learning.model.transition.z.belief_size={NONZERO_Z_BELIEF_SIZE} \
+learning.model.transition.z.state_size={NONZERO_Z_STATE_SIZE} \
+```
+for some non-zero belief and state sizes for the `z` latent component.
+
+In the paper Appendix B.5, a variant similar to Figure 2c is compared, with `z` prior not depending on `y`. To reproduce those results on *DeepMind Control Suite environments*, set
+```sh
+learning.model.transition.x.belief_size=120 \
+learning.model.transition.x.state_size=20 \
+learning.model.transition.y.belief_size=70 \
+learning.model.transition.y.state_size=10 \
+learning.model.transition.z.belief_size=70 \
+learning.model.transition.z.state_size=10 \
+learning.model.transition.z_prior_uses_y=False \
+```
+
 ### Reproducing `Dreamer`
 When `y` and `z` latent spaces are completely turned off (i.e., empty), the code essentially is Dreamer. This can be done by setting
 ```sh
