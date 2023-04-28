@@ -54,7 +54,7 @@ def make_env(spec: str, observation_output_kind: EnvBase.ObsOutputKind, seed,
     )
 
     # Sec. B.1.1
-    if task_name == 'walker_walk':
+    if (domain_name, task_name) == ('walker', 'walk'):
         background_remove_mode = 'argmax'
     else:
         background_remove_mode = 'dbc'

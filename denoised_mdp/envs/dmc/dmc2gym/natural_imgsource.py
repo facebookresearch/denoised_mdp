@@ -14,6 +14,13 @@ import abc
 import numpy as np
 import cv2
 import skvideo.io
+
+# NumPy has deprecated and removed np.int and np.float, which are aliases for Python's int and float.
+# See https://stackoverflow.com/a/74946903
+# This causes a problem with skvideo, which is not updated to use alternatives. So we restore them here.
+np.float = float
+np.int = int
+
 import tqdm
 
 from .... import utils
